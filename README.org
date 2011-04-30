@@ -5,4 +5,4 @@
   like audio or canvas), it is HTML5.  
 * TODO:
 * BUG/DESIGN LIMITATIONS:
-  
+  The bomb needs a shadow.
