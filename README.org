@@ -1,0 +1,8 @@
+* ABOUT
+* USAGE
+* COMPATIBILITY:
+  While this is likely broadly compatible (no HTML5 specific features
+  like audio or canvas), it is HTML5.  
+* TODO:
+* BUG/DESIGN LIMITATIONS:
+  
