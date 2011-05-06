@@ -110,6 +110,30 @@ function Character (start_x, start_y) {
 	     });
 }
 
+Character.prototype.left = function () {
+    this.pos.x--;
+    if (board[b_ref(this.pos.x, this.pos.y)]=="s")
+	this.pos.x++;
+}
+
+Character.prototype.right = function () {
+    this.pos.x++;
+    if (board[b_ref(this.pos.x, this.pos.y)]=="s")
+	this.pos.x--;
+}
+
+Character.prototype.up = function () {
+    this.pos.y--;
+    if (board[b_ref(this.pos.x, this.pos.y)]=="s")
+	this.pos.y++;
+}
+
+Character.prototype.down = function () {
+    this.pos.y++;
+    if (board[b_ref(this.pos.x, this.pos.y)]=="s")
+	this.pos.y--;
+}
+
 Character.prototype.move = function () {
     this.el.animate({left: this.pos.x*50 + "px",
 		     top: this.pos.y*40 - 40 + "px"}, 100);
@@ -180,25 +204,17 @@ $(document).ready(function() {
 
 	    break;
 	    case 39: //right
-	    char.pos.x ++;
-	    if (board[b_ref(char.pos.x, char.pos.y)]=="s")
-		char.pos.x--;
-	    break
+	    char.right();
+	    break;
 	    case 37: //left
-	    char.pos.x --;
-	    if (board[b_ref(char.pos.x, char.pos.y)]=="s")
-		char.pos.x++;
-	    break
+	    char.left();
+	    break;
 
 	    case 38: //up
-	    char.pos.y -- ;
-	    if (board[b_ref(char.pos.x, char.pos.y)]=="s")
-		char.pos.y ++;
-	    break
+	    char.up();
+	    break;
 	    case 40: //down
-	    char.pos.y ++;
-	    if (board[b_ref(char.pos.x, char.pos.y)]=="s")
-		char.pos.y--;
+	    char.down();
 	    break
 	    
 	    default:
