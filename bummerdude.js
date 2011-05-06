@@ -1,64 +1,84 @@
-console.log("jo");
+//From GDM, May '11, page 38
+window.requestAnimFrame = (function () { return
+					 window.requestAnimationFrame ||
+					 window.webkitRequestAnimationFrame ||
+					 window.mozRequestAnimationFrame ||
+					 window.oRequestAnimationFrame ||
+					 window.msRequestAnimationFrame ||
+					 function(callbackFunc, element) {
+					     window.setTimeout(callbackFunk, 1000/60);}});
+
 function Pos(x, y) {
     this.x=x;
     this.y=y;
-    this.copy=function() {
-	var p = new Pos();
-	p.x = this.x;
-	p.y = this.y;
-	return p;
-    };
 }
 
-function Enemy (start_x, start_y) {
-    this.pos = new Pos(start_x, start_y);
-    this.el = $("<img>").attr("src", "Enemy Bug.png")
+Pos.prototype.copy=function() {
+    var p = new Pos();
+    p.x = this.x;
+    p.y = this.y;
+    return p;
+};
+
+
+function Sprite() {
+    this.pos = new Pos(0,0);
+    this.el = $("<img>").attr("src", "")
 	.css({left: this.pos.x*50 + "px",
 	      top: (this.pos.y*40-40) + "px",
 	      zindex: 5
 	     });
+}
+
+
+Enemy.prototype = new Sprite();
+Enemy.prototype.constructor = Enemy;
+function Enemy (start_x, start_y) {
+    this.pos.x = start_x;
+    this.pos.y = start_y;
+    this.el.attr("src", "Enemy Bug.png")
+	.css({left: this.pos.x*50 + "px",
+	      top: (this.pos.y*40-40) + "px"
+	     });
 
     var last_d=1;
     var last_exclude={1: 0, 0:1, 2:3, 3:2};
-
-
-    this.move = function ()
-    {
+    this.calc_move = function () {
 	var d = Math.floor(Math.random()*4);
 	if(d==last_exclude[last_d]) return false;
 
 	switch(d)
 	{
 	case 0:
-	    bug.pos.x--;
-	    if (board[b_ref(bug.pos.x, bug.pos.y)]=="s")
+	    this.pos.x--;
+	    if (board[b_ref(this.pos.x, this.pos.y)]=="s")
 		{
-		    bug.pos.x++;
+		    this.pos.x++;
 		    return false;
 		}
 	    break;
 	case 1:
-	    bug.pos.x++;
-	    if (board[b_ref(bug.pos.x, bug.pos.y)]=="s")
+	    this.pos.x++;
+	    if (board[b_ref(this.pos.x, this.pos.y)]=="s")
 	    {
-		bug.pos.x--;
+		this.pos.x--;
 		return false;
 	    }
 	    
 	    break;
 	case 2:
-	    bug.pos.y--;
-	    if (board[b_ref(bug.pos.x, bug.pos.y)]=="s")
+	    this.pos.y--;
+	    if (board[b_ref(this.pos.x, this.pos.y)]=="s")
 	    {
-		bug.pos.y++;
+		this.pos.y++;
 		return false;
 	    }
 	    break;
 	case 3:
-	    bug.pos.y++;
-	    if (board[b_ref(bug.pos.x, bug.pos.y)]=="s")
+	    this.pos.y++;
+	    if (board[b_ref(this.pos.x, this.pos.y)]=="s")
 		{
-		bug.pos.y--;
+		this.pos.y--;
 		    return false;
 		}
 
@@ -69,9 +89,34 @@ function Enemy (start_x, start_y) {
 	last_d=d;
 	return true;
     };
+
 }
 
-var char_pos=new Pos(1,1);
+Enemy.prototype.move = function () {
+    this.el.animate({left: this.pos.x*50 + "px",
+		     top: this.pos.y*40 - 40 + "px"}, 500);
+};
+
+
+Character.prototype = new Sprite();
+Character.prototype.constructor = Character;
+function Character (start_x, start_y) {
+    this.pos.x = start_x;
+    this.pos.y = start_y;
+    this.el.attr("src", "Character Cat Girl.png")
+	.css({left: this.pos.x*50 + "px",
+	      top: (this.pos.y*40-40) + "px",
+	      zindex: 10
+	     });
+}
+
+Character.prototype.move = function () {
+    this.el.animate({left: this.pos.x*50 + "px",
+		     top: this.pos.y*40 - 40 + "px"}, 100);
+}
+
+
+var char = new Character(1,1);
 var board = [];
 
 function b_ref(x, y)
@@ -100,12 +145,7 @@ $(document).ready(function() {
 	}
     }
     
-    var char_i = $("<img>").attr("src", "Character Cat Girl.png")
-	.css({left: char_pos.x*50 + "px",
-	      top: (char_pos.y*40-40) + "px",
-	      zindex: 10
-	     });
-    area.append(char_i);
+    area.append(char.el);
 
     area.append(bug.el);
 
@@ -115,9 +155,9 @@ $(document).ready(function() {
     function update() {
 	if (!(cnt%5))
 	{
-	    while(!bug.move()) {;}
-	    bug.el.animate({left: bug.pos.x*50 + "px",
-			   top: bug.pos.y*40 - 40 + "px"}, 500);
+	    while(!bug.calc_move()) {;}
+	    bug.move();
+
 	    cnt=1;
 	}
 	cnt++;
@@ -129,7 +169,7 @@ $(document).ready(function() {
 	{
 	    case 32: //spc
 	    console.log("bomb");
-	    var b_pos = char_pos.copy();
+	    var b_pos = char.pos.copy();
 	    bomb_list.push(b_pos);
 	    var bomb_i = $("<img>").attr("src", "Bomb.png")
 		.css({left: b_pos.x*50 + "px",
@@ -140,33 +180,32 @@ $(document).ready(function() {
 
 	    break;
 	    case 39: //right
-	    char_pos.x ++;
-	    if (board[b_ref(char_pos.x, char_pos.y)]=="s")
-		char_pos.x--;
+	    char.pos.x ++;
+	    if (board[b_ref(char.pos.x, char.pos.y)]=="s")
+		char.pos.x--;
 	    break
 	    case 37: //left
-	    char_pos.x --;
-	    if (board[b_ref(char_pos.x, char_pos.y)]=="s")
-		char_pos.x++;
+	    char.pos.x --;
+	    if (board[b_ref(char.pos.x, char.pos.y)]=="s")
+		char.pos.x++;
 	    break
 
 	    case 38: //up
-	    char_pos.y -- ;
-	    if (board[b_ref(char_pos.x, char_pos.y)]=="s")
-		char_pos.y ++;
+	    char.pos.y -- ;
+	    if (board[b_ref(char.pos.x, char.pos.y)]=="s")
+		char.pos.y ++;
 	    break
 	    case 40: //down
-	    char_pos.y ++;
-	    if (board[b_ref(char_pos.x, char_pos.y)]=="s")
-	    char_pos.y--;
+	    char.pos.y ++;
+	    if (board[b_ref(char.pos.x, char.pos.y)]=="s")
+		char.pos.y--;
 	    break
 	    
 	    default:
 	    console.log("key " + eo.which);
 	    break;
 	}
-	    char_i.animate({left: char_pos.x*50 + "px",
-	      top: char_pos.y*40 - 40 + "px"}, 100);
+	char.move();
     });
 
 });
