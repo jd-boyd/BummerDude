@@ -4,5 +4,14 @@
   While this is likely broadly compatible (no HTML5 specific features
   like audio or canvas), it is HTML5.  
 * TODO:
+** keymap
+   keyDown and keyUp should update a key map that is checked during
+   poll interval, rather than acting directly.
+** Character on top of bomb and bug
+** The bomb needs a shadow.
+** Bomb explode
+** bomb kill bug
+** bomb kill char
+** bug kill char
 * BUG/DESIGN LIMITATIONS:
-  The bomb needs a shadow.
+
