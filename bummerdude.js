@@ -30,6 +30,11 @@ function Sprite() {
 	     });
 }
 
+Sprite.prototype.update = function (speed) {
+    this.el.animate({left: this.pos.x*50 + "px",
+		     top: this.pos.y*40 - 40 + "px"}, speed);
+};
+
 
 Enemy.prototype = new Sprite();
 Enemy.prototype.constructor = Enemy;
@@ -92,12 +97,6 @@ function Enemy (start_x, start_y) {
 
 }
 
-Enemy.prototype.move = function () {
-    this.el.animate({left: this.pos.x*50 + "px",
-		     top: this.pos.y*40 - 40 + "px"}, 500);
-};
-
-
 Character.prototype = new Sprite();
 Character.prototype.constructor = Character;
 function Character (start_x, start_y) {
@@ -134,12 +133,6 @@ Character.prototype.down = function () {
 	this.pos.y--;
 }
 
-Character.prototype.move = function () {
-    this.el.animate({left: this.pos.x*50 + "px",
-		     top: this.pos.y*40 - 40 + "px"}, 100);
-}
-
-
 var char = new Character(1,1);
 var board = [];
 
@@ -170,7 +163,6 @@ $(document).ready(function() {
     }
     
     area.append(char.el);
-
     area.append(bug.el);
 
     timer = setInterval(update, 1000/10);
@@ -180,18 +172,23 @@ $(document).ready(function() {
 	if (!(cnt%5))
 	{
 	    while(!bug.calc_move()) {;}
-	    bug.move();
+	    bug.update(500);
 
 	    cnt=1;
 	}
 	cnt++;
-//	console.log(cnt);
     };
+
+    $(document).keyup(function(eo) {
+	//console.log(eo.which);
+    });
 
     $(document).keydown(function(eo) {
 	switch(eo.which)
 	{
 	    case 32: //spc
+	    event.preventDefault();
+
 	    console.log("bomb");
 	    var b_pos = char.pos.copy();
 	    bomb_list.push(b_pos);
@@ -204,16 +201,24 @@ $(document).ready(function() {
 
 	    break;
 	    case 39: //right
+	    event.preventDefault();
+
 	    char.right();
 	    break;
 	    case 37: //left
+	    event.preventDefault();
+	    
 	    char.left();
 	    break;
 
-	    case 38: //up
+	case 38: //up
+	    event.preventDefault();
+	    
 	    char.up();
 	    break;
 	    case 40: //down
+	    event.preventDefault();
+	    
 	    char.down();
 	    break
 	    
@@ -221,7 +226,7 @@ $(document).ready(function() {
 	    console.log("key " + eo.which);
 	    break;
 	}
-	char.move();
+	//char.move();
+	char.update(250);
     });
-
 });
