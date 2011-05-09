@@ -145,6 +145,18 @@ var bomb_list=[];
 
 var bug = new Enemy(15, 9);
 
+function Key() {
+    this.pressed=false; //Pressed since last cleared
+    this.down=false;   //Still down.
+}
+
+var key_map = {32: new Key(), //spc
+	       37: new Key(), //left
+	       38: new Key(), //up
+	       39: new Key(), //right
+	       40: new Key()  //down
+	      };
+
 $(document).ready(function() {
     console.log("Yo");
     var area = $("#game_area");
@@ -165,25 +177,67 @@ $(document).ready(function() {
     area.append(char.el);
     area.append(bug.el);
 
-    timer = setInterval(update, 1000/10);
+    timer = setInterval(update, 1000/30);
 
     var cnt=0;
+    var moving = 0;
     function update() {
-	if (!(cnt%5))
+	if (!(cnt%15))
 	{
 	    while(!bug.calc_move()) {;}
 	    bug.update(500);
-
+	
 	    cnt=1;
 	}
+	if (!moving) {
+	//	    console.log(key_map[37]);
+	if (key_map[37].down || key_map[37].pressed) {
+	    char.left();
+	    moving=3;
+//	    console.log("left");
+	}
+	if (key_map[39].down || key_map[39].pressed) {
+	    char.right();
+	    moving=3;
+	}
+	if (key_map[38].down || key_map[38].pressed) {
+	    char.up();
+	    moving=3;
+	}
+	if (key_map[40].down || key_map[40].pressed) {
+	    char.down();
+	    moving=3;
+	}
+	for (k in key_map) {
+	    key_map[k].pressed=false;
+	}
+	    if (moving==3) {
+		char.update(1000/30*3);
+	    }
+	}
+	else {
+	    //console.log("moving cnt: " + moving);
+	    moving--;
+	    }
+
 	cnt++;
     };
 
     $(document).keyup(function(eo) {
 	//console.log(eo.which);
+	if (eo.which in key_map) {
+	    event.preventDefault();
+	    key_map[eo.which].down=false;
+	}
     });
 
     $(document).keydown(function(eo) {
+	if (eo.which in key_map) {
+	    event.preventDefault();
+	    key_map[eo.which].down=true;
+	    key_map[eo.which].pressed=true;
+	    }
+
 	switch(eo.which)
 	{
 	    case 32: //spc
@@ -200,33 +254,25 @@ $(document).ready(function() {
 	    area.append(bomb_i);
 
 	    break;
-	    case 39: //right
-	    event.preventDefault();
-
+/*
+	case 39: //right
 	    char.right();
 	    break;
-	    case 37: //left
-	    event.preventDefault();
-	    
+	case 37: //left
 	    char.left();
 	    break;
 
 	case 38: //up
-	    event.preventDefault();
-	    
 	    char.up();
 	    break;
-	    case 40: //down
-	    event.preventDefault();
-	    
+	case 40: //down
 	    char.down();
 	    break
-	    
-	    default:
+*/	    
+	default:
 	    console.log("key " + eo.which);
 	    break;
 	}
-	//char.move();
 	char.update(250);
     });
 });
