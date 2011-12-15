@@ -1,8 +1,10 @@
 * ABOUT
 * USAGE
+  Copy to a server, or in the directory do:
+    python -m SimpleHTTPServer 8080
 * COMPATIBILITY:
   While this is likely broadly compatible (no HTML5 specific features
-  like audio or canvas), it is HTML5.  
+  like audio or canvas), it is HTML5.
 * TODO:
 ** keymap
    keyDown and keyUp should update a key map that is checked during
